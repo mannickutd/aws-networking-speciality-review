@@ -66,4 +66,11 @@ Internet Gatway (IGW) - A highly scalable VPC component that allows communicatio
 
 Elastic IPs (EIP) - A static, public IPv4 address that you can attach to your account (taken from a pool) and release from your account (returned to the pool). The address comes from a pool of regional IPv4 addresses that AWS manages.
 
+| Elastic IP | Dynamic External IP |
+| ---------- | ------------------- |
+| You request allocate from IPv4 address pool. | Assigned upon EC2 creation. |
+| Assign EIP to an EC2 instance (technically assigned to the underlying ENI). | Cannot disassociate address from EC2 instance after launch. |
+| You choose when to release back to AWS. | Automatically released when you stop or terminate the instance |
+
+## Traffic Control: Network Access Control Lists and Security Groups
 
