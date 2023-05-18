@@ -74,3 +74,13 @@ Elastic IPs (EIP) - A static, public IPv4 address that you can attach to your ac
 
 ## Traffic Control: Network Access Control Lists and Security Groups
 
+Security Groups:
+* When you have have multiple security groups attached to a resource, the product of those rules is applied.
+* Security groups are attached to the ENI associated with the resource.
+
+| Security Groups | Network Access Control Lists |
+| --------------- | ---------------------------- |
+| Applied at the resource level (applied to ENI) | Applied at the subnet level |
+| Resources can have multiple SGs. The product of the rules is applied. | The subnet is associated with one NACL, an NACL can be associated with multiple subnets |
+| Stateful, return traffic is allowed with no exceptions to the rules. | Stateless, return traffice must be explicitly allowed by rules |
+
