@@ -36,5 +36,34 @@ Steps to create a VPC:
 
 ## VPC, Subnets, CIDR Blocks
 
+VPC Router - A logical construct where all routing decisions begin. Routing decisions are governed by route tables associated with VPCs and subnets. This is the first place a packet will hit when leaving a resource.
+
+AWS Reserved Network Addresses:
+* 10.0.64.0 - Network Address
+* 10.0.64.1 - Reserved by AWS for the VPC router.
+* 10.0.64.2 - The IP address of the DNS server.
+* 10.0.64.3 - Reserved by AWS for future use.
+* 10.0.71.255 - Network broadcast address.
+
+## Elastic Network Interfaces, Elastic IPs, and Internet Gateways
+
+ENI - A virtual network interface that you can attach to an instance of a VPC. Upon creation, ENIs are inside a VPC and are associated with a subnet.
+* Primary IPv4 address.
+* Mac address.
+* At least one security group.
+
+Attributes of an ENI:
+* MAC addresss.
+* Internal IP addresses.
+* Auto-assigned external IP.
+* Elastic external IP.
+* Source/dest check.
+* Security Groups.
+
+** NOTE: ** You cannot add more ENIs to a resouce to increase/improve the network bandwidth (also called NIC teaming).
+
+Internet Gatway (IGW) - A highly scalable VPC component that allows communication with resources in your VPC and the internet. When an instance recieves traffic from the internet the IGW translates the destination address to the instances private address and forwards the traffic to the VPC.
+
+Elastic IPs (EIP) - A static, public IPv4 address that you can attach to your account (taken from a pool) and release from your account (returned to the pool). The address comes from a pool of regional IPv4 addresses that AWS manages.
 
 
