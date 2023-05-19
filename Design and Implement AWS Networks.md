@@ -84,3 +84,25 @@ Security Groups:
 | Resources can have multiple SGs. The product of the rules is applied. | The subnet is associated with one NACL, an NACL can be associated with multiple subnets |
 | Stateful, return traffic is allowed with no exceptions to the rules. | Stateless, return traffice must be explicitly allowed by rules |
 
+NACLs and rule ordering
+
+NACL attributes:
+* There is always a mandatory deny all rule.
+* Rules are evaluated in order from lowest to highest.
+* When a rule is encountered and it matches the request, the allow or deny action is implemented.
+* The rule consists of Rule No., Type, Protocol, Port range, Source, Deny/Allow 
+
+Ephemeral Port Ranges:
+* Linux: 32768 - 61000
+* Elastic load balancer: 32768 - 61000
+* Windows Server 2003: 1025 - 5000
+* Windows Server 2008+: 49152 - 65535
+* NAT Gateway: 1024 - 65535
+
+NAT Gateways
+
+A NAT gateway is a Network Address Translation (NAT) service. You can use a NAT gateway so that instances in a private subnet can connect to services outside your VPC but external services cannot initiate a connection with those instances.
+
+Internet Gateway vs Nat Gateway
+* Internet Gateway (IGW) allows instances with public IPs to access the internet.
+* NAT Gateway (NGW) allows instances with no public IPs to access the internet.
