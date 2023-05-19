@@ -106,3 +106,16 @@ A NAT gateway is a Network Address Translation (NAT) service. You can use a NAT 
 Internet Gateway vs Nat Gateway
 * Internet Gateway (IGW) allows instances with public IPs to access the internet.
 * NAT Gateway (NGW) allows instances with no public IPs to access the internet.
+
+## VPC Endpoints
+
+Two Types of VPC endpoints
+
+| Interface Endpoints | Gateway Endpoints |
+| ------------------- | ----------------- |
+| Powered by AWS Private Link. | Gateway that can specify as a target in our route table. |
+| An Elastic Network Inteface with a private IP address. | S3 and DynamoDB are supported. |
+| Serves as an entry point for traffic. |  |
+| Many services are supported. |  |
+
+
