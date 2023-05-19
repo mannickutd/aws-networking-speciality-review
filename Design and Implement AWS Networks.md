@@ -118,4 +118,13 @@ Two Types of VPC endpoints
 | Serves as an entry point for traffic. |  |
 | Many services are supported. |  |
 
+VPC Endpoint key points:
+* Endpoints are a regional service. You cannot create a VPC endpoint for a VPC in a different region than where the service (S3) is located.
+* VPC boundaries. Endpoints are not extendable across VPC boundaries. They cannot be accessed from outside a VPC or from another VPC.
+* DNS resolution is required. DNS resolution is needed within a VPC. The internal VPC DNS redirects requests to the VPC endpoint.
+* Default VPC policy endpoint. By default the VPC endpoint is unrestricted but can be further locked down. VPC policies do not override resource specific policies (eg. S3 bucket policy).
+* Controlling access. Controlling access to VPC endpoints via NACLs can be problematic. The preferred approach is SGs, you can reference logical networking objects (eg. the VPC endpoint).
+* You can have multiple VPC endpoints within the same VPC, even for the same service. Each endpoint can have its own policy and can be applied to different subnets.
+
+## VPC Peering
 
