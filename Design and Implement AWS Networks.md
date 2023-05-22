@@ -126,5 +126,71 @@ VPC Endpoint key points:
 * Controlling access. Controlling access to VPC endpoints via NACLs can be problematic. The preferred approach is SGs, you can reference logical networking objects (eg. the VPC endpoint).
 * You can have multiple VPC endpoints within the same VPC, even for the same service. Each endpoint can have its own policy and can be applied to different subnets.
 
-## VPC Peering
+## VPC Peering
 
+A VPC peering connection is a networking connection between two VPCs that enables you to route traffic between them using private IPv4 addresses or IPv6 addresses. Instances in either VPC can communicate with each other as if they are within the same network. You can create a VPC peering connection between your own VPCs, or with a VPC in another AWS account. The VPCs can be in different Regions (also known as an inter-Region VPC peering connection).
+
+Software VPN Endpoint Limitations:
+* Compute costs will add to the cost. You will pay for the EC2 cost and specific software licences for VPN endpoints.
+* High availability will add to the cost, to create high availability you will need multiple EC2 instances running.
+* Personnel costs, there will be additional cost to pay somone to manage the additional the EC2 vpn endpoints.
+* Performance issues, scaling and hardware acceleration might become a factor even for large EC2 instances.
+* Security groups only work up until the VPN endpoint.
+* DNS names, there could be issues for resolving IPs on internal networks.
+
+## VPC Flow logs
+
+Flow logs may be defined for VPCs, subnets, or ENIs. VPC flow logs capture information about IP traffic sessions processed by ENIs in your VPC.
+
+VPC Flow Logs Limitations:
+* Data reporting is not real time.
+* Definitions cannot be modified after creation.
+* May not record "original" or "correct" IP addresses.
+* Does not capture all IP traffic. Ignored traffic includes:
+  * EC2 DNS requests to Route53.
+  * Amazon windows licence activation.
+  * Instance metadata.
+  * Amazon time sync service.
+  * DHCP traffic.
+  * Default VPC router.
+  * Endpoint services.
+* Does not capture application data.
+
+AWS Default Flow Log Format V2 (always in this order)
+* version
+* account-id
+* interface-id
+* srcaddr
+* dstaddr
+* srcport
+* dstport
+* protocol
+* packets
+* bytes
+* start
+* end
+* action
+* log-status
+
+V3 new fields
+* vpc-id
+* subnet-id
+* instance-id
+* tcp-flags
+* type (IPv4, IPv6 or EFA)
+* pkt-srcaddr
+* pkt-dstaddr
+
+V4 new fields
+* region
+* az-id
+* sublocation-type
+* sublocation-id
+
+V5 fields
+* pkt-src-aws-address
+* pkt-dst-aws-address
+* flow-direction
+* traffic-path
+
+## Network Performance
