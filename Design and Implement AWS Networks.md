@@ -194,3 +194,100 @@ V5 fields
 * traffic-path
 
 ## Network Performance
+
+
+
+## Exam Tips
+
+### AWS Global Infrastructure
+* Know the difference between regions, availbility zones and edge locations.
+* Understand the global infrastructure of AWS as a whole.
+* Understand what resources sit inside your VPC in AWS.
+* Understand what services sit outside your VPC.
+
+### VPC and Basic Networking Design
+* Know how to create VPCs and the components of a VPC. What is created by default?
+* Understand what must be considered when designing VPCs in AWS.
+* Understand how CIDR addressing works.
+* Know the difference between IPv4 address and IPv6 in terms of how AWS manages them.
+* You choose IPv4 CIDR blocks - AWS assigns the IPv6 CIDR blocks for you.
+* IPv6 addresses are bound by IPv4 addresses.
+
+### Subnets, VPC Routers and Route Tables
+* Understand how subnetting works and the subnets you can create in your AWS VPCs.
+* Know what to consider when choosing a CIDR block range.
+* Understand the addresses AWS reserves, and what each are reserved for.
+* Understand what the VPC router/implicit router is.
+* Know what the main route table is and what custom route tables are.
+* Be able to create local, static and dynamic routes.
+* Understand that AWS predefines the route-priority process to determine how to route traffic.
+
+### Elastic Network Interface (ENI)
+* Know what Elastic Network Interfaces and what is associated with ENIs.
+* Resources can have multiple ENIs attached to them. You cannot detach the primary ENI from a resource.
+* Understand different scenarios where multiple ENIs would be beneficial.
+* ENIs can be attached to running instances (hot attach), when stopped (warm attach) or creation (cold attach).
+* Remember that SGs are associated with ENIs not EC2 instances.
+* ENIs are confined to a single Availability Zone.
+* NIC teaming cannot be used to increase bandwidth.
+
+### Elastic IP Addresses
+* Know what Elastic IPs are and how they differ from default public IP address.
+* Understand the 1:1 relationship between private IPv4 addresses and EIPs.
+* You own the EIP until you explicity release it.
+* Know what you're charged for when using EIP.
+
+### Internet Gateways (IGW)
+* Know what IGWs are and the steps to ensure your subnet resources have internet access.
+* Understand that the IGW is a traffic translator between public and private IP address for resources inside your public subnets.
+
+### Security Groups
+* Know what SGs are and how they are used for security.
+* Understand that multiple SGs can be associated with an ENI (max 5).
+* SGs have allow rules only, no deny rules.
+* Understand the difference between inbound, outbound and defaults.
+* Know that SGs are stateful and what that means in practice.
+
+### NACL
+* Know what NACLs are and how they are used for security.
+* Every subnet must be associated with a NACL.
+* NACL operate at a subnet level.
+* NACL have both allow and deny rules. Understand how the priority works.
+
+### Traffic Control: Security Groups and NACLs
+* Understand how to apply SGs and NACLs in your VPC setup.
+* Be able to create complex structures and security within different areas of your VPC.
+* Think about the areas of your VPC that need access and do not need access.
+* Understand how to diagnose a network issue that could be caused by SGs and NACLs.
+
+### NAT Gateways
+* Know what NAT gateways are and why they are recommended over NAT instances.
+* NAT gateways are associated with a AZ.
+* For AZ-independent architectures, you can create a NAT gateway in each AZ.
+* Both NAT gateways and NAT instances are added to the route tables in the private subnets to direct inbound internet traffic to.
+
+### VPC Endpoints
+* Understand what VPC endpoints are and how they benefit your VPC setup.
+* Understand the difference in gateways, VPC endpoints and interface VPC endpoints.
+* Gateway VPC endpoints allow allow private access to services like S3 and dynamodb.
+
+### VPC Peering
+* Understand what VPC Peering is and why it is important.
+* Understand the disadvantages of running software VPN appliances in your VPC.
+* VPCs can be peered between VPCs in the same account or between other AWS accounts.
+* Know how VPC peering connections are created through request/accept protocol.
+* Be able to set up VPC peering and the associated routes within your VPC setups.
+* Transitive peering is not supported.
+* Remember you cannot create a peering connection between VPCs with overlapping or matching CIDR block ranges.
+
+### Manage and Troubleshoot AWS Network using Flow Logs
+* Understand what VPC flow logs are, how to create flow logs, and what flow logs can be attached to.
+* Be able to read flow logs and know what type of information is captured.
+* Remember that flow logs are not captured in real time.
+* Remember that when secondary IP address of a ENI is used as a destination, the logs capture the primary IP address of the interface in the log.
+
+### Network Performance
+* Understand what options we have for launching high performance workloads in AWS.
+* Know what enhanced networking is and how we can enable it on certain instance types.
+* Know what cluster placement groups are.
+* Remember when and where we can take advantage of 9001 MTU.
