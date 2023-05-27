@@ -86,7 +86,29 @@ CNAME vs Alias
 
 Routing policies determine how to respond to queries. We can set a routing policy whenever we create a record set in Route53.
 
+| Routing Policies | Purpose |
+| ---------------- | ------- |
+| Simple | Plain and simple routing. |
+| Weighted | Percentage routing. |
+| Latency based | Fastest connection routing. |
+| Failover | One or the other routing. |
+| Geolocation | Location based routing. |
 
+Weighted policy - the probability of any resource record set being called is determined by (weight of a specific resource)/(sum of weights of all records). The sum of all weights can change if resources fail the healthcheck and are removed from the set.
 
+Failover routing policy consists of two record sets, A (primary) and B (secondary). 
+* If set A is healthy, record set A will always be returned.
+* If set A is unhealthy, record set B will be returned.
+* If set A and B are unhealthy, record set A will be returned.
 
+Latency routing policy - When a DNS query is received by Route 53 for your domain or sub-domain, it evaluates the latency records that you have created for AWS Regions. Then, it will determine which region provides the lowest latency to the user, and then selects the appropriate latency record for that region.
+
+Geolocation routing policy:
+* Geolocation routing lets you choose the resources that serve your traffic based on the geographic location of your users, meaning the location that DNS queries originate from. For example, you might want all queries from Europe to be routed to an ELB load balancer in the Frankfurt region.
+* You can specify geographic locations by continent, by country, or by state in the United States. If you create separate records for overlapping geographic regions—for example, one record for North America and one for Canada—priority goes to the smallest geographic region. This allows you to route some queries for a continent to one resource and to route queries for selected countries on that continent to a different resource.
+* Geolocation works by mapping IP addresses to locations. However, some IP addresses aren't mapped to geographic locations, so even if you create geolocation records that cover all seven continents, Amazon Route 53 will receive some DNS queries from locations that it can't identify. You can create a default record that handles both queries from IP addresses that aren't mapped to any location and queries that come from locations that you haven't created geolocation records for. If you don't create a default record, Route 53 returns a "no answer" response for queries from those locations.
+
+Multivalue response routing policy
+* Multiple record sets (up to 8) can be returned with the query.
+* Only healthy host records are returned in the query.
 
