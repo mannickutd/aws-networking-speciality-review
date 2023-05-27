@@ -47,6 +47,46 @@ A zone is a container that holds important information about how to route traffi
 
 ## Route 53 Hosted Zones and Zone Records
 
+Route 53:
+* Managed DNS service.
+* Uses AWS Global infrastructure.
+* Includes features unique to AWS.
+
+Hosted zones can be public and private:
+* Public zones are for DNS request over the public internet.
+* Private zones are for internal DNS traffic from selected VPCs.
+
+Creating a public hosted zone assumes correctly configured:
+* Public domain name registration.
+* Delegation of domain authority.
+
+** NOTE: ** Registering a domain name through route53 automatically creates a public hosted zone.
+
+Private Hosted Zones
+* Must be associated with one or more VPCs. VPCs must have DNS support and DNS hostnames enabled.
+* Private domain names do not need to be registered with ICANN.
+
+CNAME vs Alias
+| CNAME | Alias |
+| ----- | ----- |
+| DNS record type. | Not a DNS record type. |
+| Referred to as an alias. | AWS Route 53 extension. |
+| Redirects to other DNS record names | Redirects to AWS service object FQDNs |
+| Returns FQDN to client | Returns IP address to client. |
+| Charge per query. | No query charge. |
+
+## Subdomain Delegation
+
+* DNS subdomain delegation allows separation of zone management.
+* Parent zones require an NS record for the subdomains authoritative DNS servers.
+* Public zones may not delegate subdomains to private zones.
+* Private zones may not delegate their own subdomains.
+
+## Routing Policies
+
+Routing policies determine how to respond to queries. We can set a routing policy whenever we create a record set in Route53.
+
+
 
 
 
