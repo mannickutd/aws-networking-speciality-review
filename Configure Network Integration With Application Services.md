@@ -112,3 +112,27 @@ Multivalue response routing policy
 * Multiple record sets (up to 8) can be returned with the query.
 * Only healthy host records are returned in the query.
 
+## Route 53 Health Checks
+
+* Monitor resource health.
+* Provide notification of status change.
+* Used for DNS failover.
+
+Endpoint health checks:
+* Tests specific endpoints for responsiveness.
+* Define target endpoints by:
+  - IP address or domain name.
+  - Protocol used for the check (tcp, http, https).
+  - Port number.
+  - Optional file paths for http/https checks.
+
+** Note: ** - Domain name health check gotchas.
+* Domain name health checks only use IPv4 addresses.
+* Healthy domain name health checks to domain names with multiple values will return IP addresses for failed nodes.
+
+Summary:
+* Route 53 health checks prevent requests being sent to offline endpoints.
+* DNS failover requires configuring multiple records or IP addresses for a hostname.
+* Use IP-address endpoint health checks for resources hosted on redundant endpoints.
+* Creating health checks for alias records is unnecessary.
+
