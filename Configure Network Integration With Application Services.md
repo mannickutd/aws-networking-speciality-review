@@ -136,3 +136,80 @@ Summary:
 * Use IP-address endpoint health checks for resources hosted on redundant endpoints.
 * Creating health checks for alias records is unnecessary.
 
+## Private Hosted Zones
+
+A private hosted zone only responds to queries coming from within the associated VPC and it is not used for hosting a website that need to be publicly accessed. The main use case of a private hosted zone is split-view DNS. We can use Amazon Route 53 to configure split-view DNS, also known as split-horizon DNS.
+
+## Elastic Load Balancer
+
+* Single logical target for service requests.
+* Requests distributed across backend servers.
+
+### AWS Elastic Load Balancer
+* Highly available.
+* Regional resource.
+* Auto-scales for workload.
+* Protected by security groups.
+* Can terminate https/tls connections.
+
+### ELB Types:
+* Application load balancer (ALB)
+ - Layer 7.
+ - HTTP and HTTPS.
+ - Routes requests using http header content.
+* Network Load Balancer
+ - Layer 4.
+ - TCP, UDP, TLS.
+ - Route requests by protocol and port number.
+* Classic Load Balancer (ELB)
+ - Layer 4 and 7.
+ - HTTP, HTTPS, TLS, TCP.
+ - Route requests by protocol and port number.
+ - Legacy option.
+
+### Gateway Load Balancer
+* Works with applications that operate in-line with network traffic.
+ - Security
+ - Analytics
+* Uses GENEVE protocol to encapsulate traffic.
+ - Allows original IP traffic to be unchanged.
+* Handles traffic to and from service targets.
+ - Handles layers 3 and 4.
+
+| Type | Pros and Cons |
+| ---- | ---- |
+| ELB | Supports ec2-classic, legacy option, ALB and NLB offer more flexibility. |
+| ALB | "Web" application and services. Customizable request handling based on HTTP header count. |
+| NLB | Forwards only by protocol and port. Better performance and scalability than ALB. Component of endpoint services and vpc traffic mirroring. |
+
+### Core ELB Concepts
+* Targets
+ - Backend resources that requests are forwarded to.
+ - Can be in different AZs.
+ - Health evaluated before use.
+ - Types vary by ELB type.
+* Target Groups
+ - Logical container for targets.
+ - Scope configuration of many settings (health checks, expected traffic).
+* Listeners
+ - Processes that check for connection requests to specific protocols and ports.
+ - Matching traffic forwarded to targets.
+ - Settings and options vary by ELB type.
+
+### ELB Connectivity
+* Each ELB works within a single VPC.
+* Requests are sent to an AWS assigned FQDN.
+* Public if ELB is internet facing or private for internal use.
+
+### AZ presence
+* ELB must be configured to work within at least one AZ. Use two AZ to support high availability.
+* Worker nodes created in each configured subnet. Additional nodes added when scaling.
+* Each node accessed by IP address.
+
+### Request Routing
+* Requests to ELB will be evenly distributed across all nodes (round-robin).
+* Nodes determine which targets to receieve requests.
+* If cross zone enabled, ELB will route requests across AZ to other targets.
+
+
+
