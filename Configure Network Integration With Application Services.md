@@ -211,5 +211,74 @@ A private hosted zone only responds to queries coming from within the associated
 * Nodes determine which targets to receieve requests.
 * If cross zone enabled, ELB will route requests across AZ to other targets.
 
+### ELB Target Groups
+* Define a target protocol and port of expected traffic, health check settings and elb routing properties.
 
+* Target groups identify back-end targets and how they will be accessed.
+* Target groups define health check settings used by the load balancers.
+* Target groups session stickiness ensures related requests are handled by the same target.
+* Classic load balancers configure target settings locally instead of using target groups.
+
+* ALB - application load balancer (http, https).
+* NLB - network load balancer (TCP, UDP, TLS, TCP_UDP).
+* GWLB - gateway load balancer (GENEVE).
+
+* ELBs send health check messages to all registered targets. A target must respond in order to be forwarded requests from ELB. 
+
+* HTTP/HTTPS health check settings include, interval, port, success codes and timeout, healthy threshold and unhealthy threshold.
+* TCP health check settings include, threshold, timeout is 10s, interval is either 10s or 30s.
+
+* Target registration/deregistration can occur at any time and when connected to autoscaling automates this process.
+* Targets may be members of multiple target groups.
+* Newly registrated targets must reach healty threshold before receiving requests.
+
+* Session stickiness allows requests to be consistently forwarded to the same target. In order to take advantage of session stickiness the requesting client needs to support cookies.
+* Session cookies are encrypted.
+
+### Application Load Balancers
+* Layer 7 load balancer.
+* Routes traffic to targets based on HTTP/HTTPS header content.
+* Support for HTTP 1.1 and 2
+* Websockets
+* Request-authentication using Cognito or OIDC compliant provider.
+
+* ALB settings groups:
+  - General, name, scheme, ip address type. Listeners identify request traffic of interest.
+  - Availability zones, vpc, at least 2 AZs, one subnet per AZ. Subnets /27 bitmask or larger, 8 free IP addresses, internet facing scheme must use public subnets.
+  - Security settings include, default certificate for HTTPS listeners. Additional certificates may be added later and optional step if no HTTPS listeners.
+  - You will need to attach a target group, either a new target group or an existing target group.
+
+* X-Forwarded headers, non standard http headers. ALB supported headers include X-Forwarded-For, X-Forwarded-Proto, X-Forwarded-Port.
+
+** ALB Listener rules
+* Rules allow granular routing of traffic matching a listener.
+* Listeners always start with a 'default' rules (cannot be deleted).
+* Each rule specifies, request header conditions to match, action to perform for matching requests and priority order.
+* Rule considitions include, host header, path, http header, http methods, query string pairs or just values and source IP IPv4 or IPv6.
+* Multiple conditions may be used.
+* No more than one of host header, path, http request method or source IP.
+* Comparison limits 3 per-condition, 5 per rule.
+
+### Network Load Balancers
+* Layer 4 load balancer.
+* Routes traffic to targets based on protocol and port number.
+* Scalable to millions of requests per second.
+* May be assigned static IP addresses.
+
+* Supported listener protocols and target group protocols (TCP, UDP, TLS and TCP_UDP)
+* Listeners always forward matching traffic to selected target group.
+* Internet facing IPv4 is a elastic IP address, IPv6 is manually assigned.
+* Internet scheme uses manually-assigned private address from associated subnet.
+
+* TCP/UDP/TLS Target Group Attributes
+  - Deregistration delay.
+  - Connection termination on deregistration.
+  - Session stickiness is supported only by source IP address, not supported on TLS listeners.
+
+* NLB private IP always used as source IP for private link and IPv6 converted to IPv4.
+
+* Endpoint services, service access to other AWS principals. Accessed using private DNS name and interface endpoints.
+* VPC traffic mirroring, monitoring services in target group, NLB selected as traffic mirror target.
+
+### Classic Load Balancers
 
