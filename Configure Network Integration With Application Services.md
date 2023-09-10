@@ -281,4 +281,114 @@ A private hosted zone only responds to queries coming from within the associated
 * VPC traffic mirroring, monitoring services in target group, NLB selected as traffic mirror target.
 
 ### Classic Load Balancers
+* Layer 4 and layer 7 http/https, TCP and SSL/TLS.
+* Routes traffic to targets based on protocol and port number.
+* Supports EC2-Classic, legacy option.
+
+* Difference to the ALB, Target groups are not used, so all routing in configured at CLB.
+  - Target protocol.
+  - Health checks.
+  - Target registration.
+  - Attributes, cross-zone load balancing, connection draining, sticky sessions, proxy protocol.
+ 
+* Instances launched into shared customer network.
+* Not available for AWS accounts created after December 2013.
+
+### VPC Endpoint Services
+- Allow AWS accounts to offer application services to other AWS principals.
+* Provider provisions service instances within ELB target group, must be associated with NLB or GWLB.
+* Consumers request service access by creating interface endpoints.
+* May be in different AWS accounts.
+* Must be in the same AWS region as provider.
+* May be revoked at any time.
+* Consumer endpoints may be accessed by AWS hybrid networks.
+* Provider application provisioned as NLB/GWLB target group member. Provider is responsible for application.
+* Endpoint service creation, select load balancer, manual or automatic request acceptance, or private dns name.
+
+### Gateway Load Balancers
+* Layer 3 gateway, accessed as an endpoint service.
+* You cannot directly route traffic to a GWLB, it is not assigned a FQDN.
+* After traffic is routed to it, it behaves very similar to a layer 4 load balancer.
+* All traffic forwarded to target group.
+* Encapsulated using Geneve protocol (Generic Network Virtualization Encapsulation).
+* Original IP data of the packet is not changed.
+* Provides ELB benefits to security, management and analytics services.
+* Pre-GWLB implementation was complicated to provision and manage.
+* No IPv6 support.
+* Does not encrypt/decrypt.
+* Single listener accepts all traffic.
+* All traffic forwarded to selected target group.
+* Must use GENEVE Protocol.
+* Instance and IP address targets only.
+* Targets must support GENEVE protocol, GENEVE TLVs, allow traffic from GWLB.
+
+### Load balancing with Amazon ECS
+- ECS Services can be easily integrated with Elastic Load Balancers for even distribution of traffic.
+* Supported ELBS
+  - ALB
+  - NLB
+
+* Considerations for ELBs
+  - You can only attach five target groups to a single service.
+  - Multiple target groups in a service must use the rolling update deployment controller type.
+  - You can combine internal and external load balancers for traffic.
+  - Using the awsvpc networking type requires the use of 'ip' target type (specific to fargate services).
+  - Containers can belong to multiple target groups to allow for flexibility.
+
+* Concepts to Know
+  - ELB support the use of dynamic host port mappings.
+  - Dynamic host mapping example: Container Port 80, Host Port 0.
+  - ALBs support path-based routing and priority rules.
+  - Using IP target type for NLBs means requests are seen as coming from the NLB private IP address.
+  - That means tasks are essentially open to the world once requests are allowed.
+
+* Multiple Target Groups
+  - Multiple targets groups could be used to support multiple paths of the same service supported by different containers, perhaps they have different latency requirements.
+ 
+### Hosting CDNs with Amaxon Cloudfront
+- Amazon cloudfront operates at layer 7.
+
+* Important terms and concepts
+  - Origin server: Location of stored content for distributions to use.
+  - Distribution: Configuration telling cloudfront which origin server to use.
+  - Domain name: Cloudfront assigned DNS for use in web requests.
+  - Edge location: Geographically-dispersed servers that cache your files.
+  - Edges: Points of presence. S3 or custom origins.
+
+* Amazon cloudfront architecture
+  - Missed cache:
+    1. Client requests an artifact.
+    2. The closest edge location is checked, if missing
+    3. The regional edge location is checked if missing
+    4. the request is forwarded to the origin.
+  - Cache Behavior
+    1. Client requests an artifact.
+    2. The load balancer checks if the path has "*.png" in the name if yes
+    3. Use the cache behavior specific for the rule for "*.png".
+    4. Fetch from separate origin server.
+
+* Amazon cloudfront cache behaviors
+  - Default cache behavior, required for all distributions.
+  - Additional cache behaviors to define responses based on requests. Eg. match for specific path pattern, like *.png and send to S3 origin.
+  - Cache behaviors use one specific origin based on settings.
+  - If you want to use multiple origins, you must have a matching number of cache behaviors.
+
+* Status codes in amazon cloudfront
+* Always cached
+  - 404: Not found.
+  - 414: Request-URL too large.
+  - 500: Internal server error.
+  - 501: Not implemented.
+  - 502: Bad gateway.
+  - 503: Service unavailable.
+  - 504: Gateway timeout.
+* Conditionally cached
+- Requires the use of the headers ('Cache-Control max-age', 'Cache-Control s-maxage').
+  - 400: Bad request.
+  - 403: Forbidden.
+  - 405: Method not allowed.
+  - 412: Precondition Failed.
+  - 415: Unsupported Media Type.
+ 
+
 
