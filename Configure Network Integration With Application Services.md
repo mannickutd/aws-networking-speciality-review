@@ -449,3 +449,82 @@ A private hosted zone only responds to queries coming from within the associated
   - Custom origins (EC2/on-premises) require external public TLS cert.
  
 ### Private Viewer Access in Amazon CloudFront
+Private Viewer Access, we can restrict access to content using private viewer access.
+Trusted key groups or trusted signers are required to generate these.
+
+* Signed URLs, perfect for restricting access to specfic, individual files (specfic.exe). Useful when clients/users cannot support cookies.
+* Signed Cookies, perfect for providing access to multiple restricted files (*.mp4). Do NOT want to change current URLs.
+* Signed URLs always take precedence over signed cookies.
+
+### Protect Sensitive Data with CloudFront Field-level encryption
+* Field-Level Encryption, is an ability to add an additional layer of security for protecting data throughout a process/request within CloudFront.
+  - Feature to help protect sensitive data within CloudFront.
+  - Information is encrypted at the edge and remains encrypted throughout.
+  - Completely separate from the actual HTTP/S tunnels.
+  - Uses a public and private key pair for all encryption/decryption.
+
+* Four High-Level Configuration Steps
+  - Generate your public and private key pair.
+  - Create field-level encryption profile.
+  - Create field-level encryption config.
+  - Link to a cache behaviour.
+
+### Georestricting Viewer Access in Amazon CloudFront
+Prevents users in specific geographic areas from accessing CloudFront-distributed content.
+* CloudFront-Native Restriction, restricts all access to files associated with a distribution. Restricts at a country level. 
+* Third-Party Restriction, restricts access to a subset of files. Usually allows for finer granularity than country-level restrictions.
+
+* CloudFront restrictions are based on an allow list and deny list.
+* Requests from restricting locations will receive a 403 Forbidden status.
+* From AWS: Third-party database leveraged that offers 99.8% accuracy.
+* Ability to return custom error messages from denied requests.
+
+### Invalidating and Expiring Files within CloudFront
+
+* Control Caching durations
+  - By default CloudFront serves a cached file until the specified cache duration.
+  - After expiration, origin fetch occurs to update cached data.
+  - Cache hit; CloudFront has the latest version for immediate return. Returns a 304 not modified.
+  - Cache miss; CloudFront retrieves latest version from origin. Returns a 200 OK.
+  - Default TTL of 24hrs, CloudFront can evict less common files.
+* Cache TTL Headers
+  - Cache-Control max-age, specified in seconds how long browser will cache the file.
+  - Cache-Control s-maxage, ""
+  - Expires, specifies a date and time that the file will expire.
+* File Invalidation
+  Remove cached files to force origin fetch before specified object TTL. Invalidations occur at the distribution level.
+  - Invalidate Files, specify the path you want to invalidate (URL/files/*.png)
+  - File Versioning, provide a version name in files for best control (*_v3.png)
+ 
+### Customizing Requests Using Lambda@Edge and Amazon CloudFront Functions
+
+* Requests and Responses
+  - Viewer request, from the client to the edge server
+  - Origin request, from the edge server to the origin server
+  - Origin response, from the origin server to the edge server
+  - Viewer response, from the edge server to the client.
+* Lambda@Edge Overview
+  - An extension of the AWS lambda service, must be in us-east-1.
+  - Node.js or Python functions executed at edge locations.
+  - Scale automatically up to thousands of requests per second.
+  - Process request closer to viewers for reduced latency.
+  - Allows for interception of request and responses for customizations.
+* CloudFront Functions Overview
+  - Native functions that live entirely within CloudFront.
+  - Can only be written in javascript.
+  - Extremely similar use cases to Lambda@Edge.
+  - Leverage CloudFront Functions and Lambda@Edge if desired.
+  - Best latency- sub-millisecond startup and millions of requests per second.
+* Use Cases
+  - A/B testing, headers could be used to direct traffic to different origins.
+  - User-Agent checks
+  - Inspect cookies
+  - Custom HTTP responses
+  - Authorization checks, inspect authorization checks
+  - Make external Network calls.
+* Adding Security Headers
+  - Strict transport security, X-Frame-Options
+  - Content-Security-Policy, X-XSS-Protection
+  - X-Content-Type-Options, Referrer-Policy
+
+
