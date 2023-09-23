@@ -390,5 +390,62 @@ A private hosted zone only responds to queries coming from within the associated
   - 412: Precondition Failed.
   - 415: Unsupported Media Type.
  
+### S3 Origins, Custom Origins, and Origin Access Identities in CloudFront
 
+* Origin Types
+  - Amazon S3
+  - MediaStore/MediaPackage
+  - Application Load Balancer
+  - Lambda Function URLs
+  - Amazon EC2 Instance
+  - CloudFront Origin Group (Group origin types together)
 
+* Origin Access Controls
+  Origin access control (OAC) is the successor to an origin access identity (OAI).
+
+  - Feature differences
+    1. Using all Amazon S3 buckets in all AWS regions. Includes opt-in regions launched after December 2022.
+    2. Amazon S3 buckets using AWS KMS (SSE-KMS).
+    3. Dynamic requests (PUT and DELETE) to S3.
+    
+  - Reviewing
+    1. Requires an Amazon S3 bucket origin that is NOT a website endpoint.
+    2. Grant OAC access to bucket via the Amazon S3 bucket policy.
+    3. Must grant access to OAC manually for distribution.
+    4. OAC is a type of identity that is NOT a role or user.
+  
+* Application Load Balancer Custom Origins
+  - CloudFront can cache objects from apps fronted by an ALB.
+  - Allows inheriting built-in DDos protection of CloudFront as well.
+  - Similar to S3 origins, you can restrict ALB access to your distributions.
+  - Configure CloudFront to add custom HTTP headers to incoming requests.
+  - Configure ALB to only forward requests containing a custom HTTP header.
+
+* Amazon EC2 Custom Origins Security
+  - Leverage operating system firewalls for controlling access.
+ 
+### Securing Amazon CloudFront with TLS/SSL
+* Five important cache behaviour settings
+  - Precedence, the order of precedence for evaluating behaviours. Which is the default.
+  - Path Pattern, request path pattern the cache behaviour will apply to eg. *.gif
+  - Origin/Origin group, which origin/origin group the requests are routed to.
+  - Viewer Protocol Policy, which protocol you want to use for edge locations eg. HTTPS only, Redirect HTTP to HTTPS, HTTP and HTTPS.
+  - Restrict Viewer Access, Require use of signed URLs or signed cookies.
+
+* CloudFront TLS/HTTPS overview
+  - Standard CloudFront assigned domain name, included default TLS support, CNAMES are supported.
+
+* CloudFront TLS/HTTPS details
+  - Native ACM integration. Certs MUST be issued in us-east-1.
+  - CloudFront TLS/SSL implementation have support for SNI.
+  - SNI allows multiple hosts and certs using the same shared IP.
+  - Non-SNI browser support is available, but it is very expensive.
+
+* Architecture example
+  
+* Origin protocol differences
+  - Amazon S3 origins automatically handle TLS certificates.
+  - ALB origins require a public TLS cert (ACM-issued is most common).
+  - Custom origins (EC2/on-premises) require external public TLS cert.
+ 
+### Private Viewer Access in Amazon CloudFront
