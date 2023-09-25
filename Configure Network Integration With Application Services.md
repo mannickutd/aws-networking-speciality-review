@@ -527,4 +527,127 @@ Prevents users in specific geographic areas from accessing CloudFront-distribute
   - Content-Security-Policy, X-XSS-Protection
   - X-Content-Type-Options, Referrer-Policy
 
+### Optimizing CloudFront Distributions
 
+* Monitoring Activity
+  - Cache statistics
+    1. Total requests.
+    2. Result types.
+    3. Bytes transferred.
+    4. HTTP status codes.
+    5. Incomplete requests
+  - Popular objects.
+    1. Info about 50 most popular objects.
+  - Top referrers.
+    1. Info about top 25 referrers.
+  - Usage.
+    1. Data transferred.
+    2. Requests by protocol and destination.
+  - Viewers
+    1. Devices.
+    2. Browsers.
+    3. Operating systems.
+    4. Locations.
+  - Default metrics.
+    1. Requests.
+    2. Bytes downloaded.
+    3. Bytes uploaded.
+    4. 4xx error rate.
+    5. 5xx error rate.
+    6. Total error rate.
+  - Additional metrics.
+    1. Cache hit rate.
+    2. Origin latency.
+    3. Error rate by status code.
+  - Standard logs
+    1. Logs request details to S3 bucket.
+    2. Enabled per distribution.
+    3. Best-effort logging, usually under an hour up to 24hrs.
+    4. Cannot modify fields.
+    5. No CloudFront charges, still s3 charges.
+  - Real-Time logs.
+    1. Log data sent to Amazon Kinesis data stream.
+    2. Enabled per behaviour.
+    3. CloudFront real-time log configuration.
+       3.1 Sample rate
+       3.2 Data fields to include.
+       3.3 Data stream endpoint.
+       3.4 IAM role.
+* Improving Cache Hit Performance
+  - Price class (by default use all edge locations, best performance)
+    1. Distribution setting.
+    2. Determines which edge locations serve your content.
+  - OriginShield
+    1. Origin setting
+    2. Caching layer between regional edge caches and origins.
+    3. Operates in regional edge cache regions.
+    4. Incurs additional charges.
+* Cache Key
+  - Unique identifier for cached objects.
+  - Generated from selected viewer-request content.
+    1. HTTP headers.
+    2. Query strings.
+    3. Cookie content.
+  - Default cache key includes
+    1. Distribution FQDN.
+    2. URL path of requested object.
+  - Cached items are returned if requests geneerate an exact cache key match.
+  - Cache misses generate origin requests.
+  - Customizing cache keys
+    1. Cache keys may be customized per behaviour.
+    2. Legacy cache settings configured directly within behaviour.
+    3. Cache policies, defined as service-level objects. Use AWS managed policies or create your own.
+    4. Can have unintended consequences including.
+       4.1 Duplicate object caching.
+       4.2 Reduced cache hit rate.
+       4.3 Increased  origin requests.
+* Modifying Origin Requests
+  - Different content from viewer requests.
+    1. URL path.
+    2. Request body.
+    3. Required HTTP headers.
+    4. Cache key values.
+  - Modified via origin request policies.
+    1. Optional.
+    2. Separate from cache policies.
+  - Use origin request policies to send data to application
+    1. Implement simplier cache key policies.
+    2. Improve cache hit ratio.
+* Cached Content usage
+  - Content served from cache until TTL expiration, default 24hrs.
+  - Requests after expiration cause check for updated object at origin.
+  - Expired content evicted if not frequently used.
+* Min/Max/default TTLs.
+  - Cache policy or behaviour-level setting.
+  - Applies to all files within behaviour path.
+* Cache control HTTP headers
+  - Control expiration for individual files.
+  - Controls browser caching.
+  - Works with min and max ttl values.
+* Updating Cached Content
+  - Unexpired cached content will always be used even if newer versions exist at origin.
+  - Extra steps are necessary to ensure all Edge locations return the latest content version.
+  - Add invalidation to distribution.
+    1. Evict cached content before TTL expiration.
+    2. Specify URL path of file(s) to be evicted.
+    3. May take time for all evictions to occur.
+    4. First 1000 paths/month are free.
+  - Use versioned files or directories.
+    1. Update file/directory names.
+    2. Update URLs in application.
+    3. More control over content updates.
+    4. More visibility over update progress.
+    5. Can roll back to prior versions.
+    6. Less expensive than invalidation.
+* Edge Functions
+  - Customize request and response processing.
+    1. Modify HTTP headers.
+    2. Redirect or rewrite URLs.
+    3. Authentication/authorization.
+    4. Normalize cache key values.
+  - Code runs at edge location.
+  - Associated with:
+    1. Cache behaviours.
+    2. Request/response events.
+   
+### Accelerating Workloads Using AWS Global Accelerator
