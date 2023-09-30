@@ -651,3 +651,128 @@ Prevents users in specific geographic areas from accessing CloudFront-distribute
     2. Request/response events.
    
 ### Accelerating Workloads Using AWS Global Accelerator
+
+* AWS global accelerator overview - is a service in which you create accelerators to improve the performance of your applications.
+* Global accelerator concepts and terms
+  - Accelerator directs user traffic to the optimal AWS endpoints.
+  - Network zones, isolated units of unique physical infrastructure.
+  - Listener, processes inbound connections based on ports and protocols.
+  - Endpoint, resources that global accelerator directs traffic to.
+* Two types of accelerators
+  - Standard
+    1. Network load balancers
+    2. Application load balancers
+    3. Amazon ec2 instances
+    4. Elastic IP addresses
+  - Custom routing
+    1. VPC subnets with EC2 instances
+* 10000 foot view
+  - AWS provides two static IP addresses (Anycast) to associate with accelerators.
+  - Dual-stack receives four static IP addresses (2 IPv4 and 2 IPv6).
+  - Static IPs act as a single, fixed entry for ALL client traffic.
+  - Standard, traffic routed based on user location, health checks and weights.
+  - Custom, traffic routed to specified EC2 instances and ports in a VPC.
+* Important concepts to remember and conclusion
+  - Accelerators allow you to implement edge locations nearer to clients.
+  - Standard and Custom accelerator types leverage Anycast IPs.
+  - TCP connections terminated at GA accelerators.
+  - Remember: TCP or UDP connections! not HTTP or HTTPS
+  - Differentiator: Amazon CloudFront supports HTTP and HTTPS.
+
+### Lambda within a VPC
+* VPC for lambda
+  - Lambda functions run in an AWS owned VPC by default.
+  - Default networking allows for public internet access and invocations.
+  - If you need private VPC resource access, you can deploy functions into your VPC.
+* Requirements and Concepts
+  - Hyperplane ENI - Lambda provides a managed resource called Hyperplane that allows connections to your VPC.
+  - Security groups - You must assign and manage security group configurations for your Hyperplane ENIs.
+  - NAT Gateway - Internet access for these functions requires a NAT gateway. No public IP addresses.
+* Hyperplane ENIs
+  - Provide NAT capabilities from the AWS lambda VPC to your custom VPC.
+  - This NAT capability is known as VPC-to-VPC NAT (V2N).
+  - V2N allows connections from AWS-owned VPC to your VPC, but NOT the other way around.
+  - This does NOT replace VPC interface endpoints.
+  - Functions can share Hyperplane ENIs if they use the same security groups and subnets.
+* Use Cases and Scenarios
+  - Lambda funtions requiring access to private RDS instances.
+  - Access to EC2 hosted applications in private subnets.
+  - Security requirements to restrict any internet access from all AWS services in use.
+* Conclusion
+  - You can configure AWS lambda functions to gain VPC access.
+  - Hyperplane ENIs are created in each chosen private VPC subnet.
+  - V2N provides access from the AWS owned VPC to your VPC. One-way.
+  - Functions can share Hyperplane ENIs if security groups and subnets are the same.
+  - NAT gateway access is required to provide internet capabilities.
+
+### Running Kubernetes in AWS
+* AWS EKS Networking Overview
+  - Always created within a VPC.
+  - Clusters require a VPC with at least two subnets in different AZs.
+  - VPC DNS hostname and resolution support must be enabled.
+  - Subnets must have a minimum of six IP addresses (16 recommended).
+  - EKS integrates with other AWS services. Primarily focus on ELBs.
+* Load balancing
+  - Application Load Balancer
+    1. Kubernetes ingress.
+    2. Layer 7.
+    3. Configures routes of HTTP/S traffic.
+  - Network Load Balancer.
+    1. Service type of LoadBalancer.
+    2. Layer 4.
+    3. Pods on EC2 IP and instance targets.
+* Conclusion
+  - AWS managed VPC for Amazon EKS control plane infrastructure.
+  - VPC kube-api traffic routed between managed ENIs in your VPC.
+  - EKS admin access endpoint is publicly accessible by default.
+  - ELB integrations, ALB (ingress) and NLB (Loadbalancer service type).
+  - Custom VPC requires at least 2 subnets, with at least 6 IP addresses each.
+
+### AppStream 2.0
+* What is Amazon AppStream 2.0
+  - Fully managed app streaming service for accessing desktop apps from anywhere
+  - Delivers applications through web browsers that are HTML5 compatible.
+  - Requires at least one subnet to run in. Fault tolerance needs two+ subnets in different AZs.
+  - Each instance has an ENI in a VPC. A new instance is used for each individual user.
+  - Network access is provided via the ENI security groups.
+  - AppStream User Pools
+  - Active Directory/SAML 2.0
+* Use cases
+  - Enterprise applications, data and applications can be centralised, and applications can be updated once.
+  - Design and engineering, gives designers the ability to use powerful 3D applications on an device.
+  - Online Trials/Training, quickly and easily trial and test software without downloading software locally.
+* Possibilities for internet access
+  - >100 concurrent users, new VPC and private subnets using a NAT gateway.
+  - <100 concurrent users, new or existing VPC with public subnets with IGW access.
+  - <100 concurrent users, default VPC and subnets.
+* Networking notes
+  - AppStream 2.0 uses S3 for storage depending on the configuration.
+  - Easily leverage S3 VPC endpoints for secure access to buckets.
+  - Customer ENI provides access to VPCs, the internet, and joining directories.
+  - Management ENI, connects to secure management network and used for interactive streaming to user devices.
+  - AppStream uses an IP from the 198.19.0.0/16 range for the management ENI.
+  - Users connect to streaming instances via public internet endpoint or via VPC interface endpoints.
+* User device required ports: internet endpoints
+  - 443 Used for HTTPS communication between user devices and instances.
+  - 8433 UDP HTTPS between user device and instances.
+  - 53 Used for user devices and your DNS servers.
+* ENI IP ranges and ports
+  - Management
+    1. Inbound TCP on port 8300, for establishment of the streaming connection.
+    2. Inbound TCP on ports 8000 and 8443, for management of the streaming instance by AppStream 2.0
+    3. Inbound UDP on port 8300, for establishment of the streaming connection over UDP.
+  - Customer
+    1. TCP 80
+    2. TCP 443
+    3. UDP 8433
+    4. ENI IP Ranges and Ports joining directories.
+      - TCP/UDP 53 DNS
+      - TCP/UDP 88 Kerberos authentication
+      - UDP 123 NTP
+      - TCP 135 RPC
+      - UDP 137-138
+      - TCP 139 Netlogon
+      - TCP/UDP 389 LDAP
+      - TCP/UDP 445 SMB
+      - TCP 1024-65535 Dynamic ports for RPC 
+* Conclusion
