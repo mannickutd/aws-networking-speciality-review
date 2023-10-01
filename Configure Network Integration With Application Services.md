@@ -775,4 +775,75 @@ Prevents users in specific geographic areas from accessing CloudFront-distribute
       - TCP/UDP 389 LDAP
       - TCP/UDP 445 SMB
       - TCP 1024-65535 Dynamic ports for RPC 
-* Conclusion
+
+### App Networking via AWS App Mesh
+* Overview
+  - AWS managed service mesh for monitoring and controlling services.
+  - Perfect use for complex microservice architecture within AWS.
+  - Based on Envoy proxy, the open-source project.
+  - App Mesh deploys a validated  Envoy proxy container image.
+  - Management port is available to all hosts within a VPC.
+
+### Securing API Gateway
+* Options
+  - REST API, API keys, per-client throttles, validation of requests, WAF integration.
+  - HTTP API, Simpler option than REST API, cheaper, minimal features.
+  - Websocket API, collection of websocket routes integrated with lambda functions, http endpoints, and other AWS services.
+* Securing published REST APIs
+  - Support for custom domain names that allow you to use your own URL.
+  - Regional custom domain names require ACM certs in their region.
+  - Use a CloudFront distribution to configure an edge-optimised domain name.
+  - Edge-optimised custom domain names require ACM certs in us-east-1.
+  - Leverage Route53 health checks to support backup region DNS failovers.
+* Changing endpoint types
+  - From edge-optimised to regional or private.
+  - From regional to edge-optimised or private.
+  - From private to regional.
+  - Cannot go from private API to edge-optimised endpoint.
+
+### Enabling Enhanced Networking on Amazon EC2
+* Traditional virtual networking
+  - All networking is virtual and shares the same physical hardware.
+  - Controlled by the underlying hypervisor software.
+  - Original compensation effort was to enable VM networking passthrough.
+* SR-IOV
+  - Single root I/O virtualisation.
+  - Supports very high performance networking requirements.
+  - Drastically lower CPU utilisation compared to traditional virtual networking.
+  - Benefits, higher bandwidth, higher packet per second (PPS) performance, and consistently lower inter-instance latencies.
+  - No additional charge to enable this service.
+  - All current generation instance types (excluding T2) support this.
+* Enhanced networking interface types
+  - Elastic Network Adapter (ENA), network speeds up to 100 Gbps.
+    1. Requires installation of ENA module and needs to have ENA support enabled.
+    2. Most common implementation for current generation of instances.
+    3. ENA Express for high-performance communication of instances in the same subnet.
+  - Intel 82599 Virtual Function (VF), network speeds up to 10 Gbps.
+    1. Uses the Intel ixgbevf driver.
+    2. Supported instance types: C3, C4, D2, I2, M4 and R3.
+* Multi-flow vs single-flow traffic
+  - Multi-flow (MPTCP)
+    1. Aggregated instance bandwidth dependent on destination of traffic.
+    2. Same-region traffic utilises full bandwidth that is available.
+    3. Cross region, IGW and DX traffic utilises up to 50% of network bandwidth available.
+    4. Instances with less than 32vCPUs limited to 5 Gbps.
+  - Single-flow, 5-tuple traffic
+    1. Source IP, Source Port, Destination IP, Destination Port and Protocol.
+    2. Limited to 5 Gbps for instance NOT in the same cluster placement group.
+    3. Workaround is to enable ENA Express to achieve up to 25 Gbps between instances in the same subnets.
+
+### High Performance Computing with Elastic Fabric Adapter
+* EFA
+  - Elastic fabric adapter is a network device that can be attached to EC2 instances to accelerate high performance computing and machine learning apps.
+* Overview
+  - More consistent latency and higher throughput than most HPC systems.
+  - Enhance the performance of inter-instance communications.
+  - Integrates with Libfabric 1.7.0 and later.
+  - ENA with additional capabilities (not fully supported with Windows).
+  - Offers OS-bypass. HPC and ML apps directly communicates with NIC hardware.
+  - Supports Open MPI, Intel MPI and NCCL.
+  - Uses OP TCIP/IP stack and ENA driver to enable communication.
+  - Libfabric API bypasses OS kernels and directly talk to EFA device.
+  - Greatly reduces overhead.
+  - EFA OS-bypass traffic limited to a single subnet.
+  - Security groups must allow all inbound/outbound traffic to and from itself.
