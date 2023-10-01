@@ -847,3 +847,22 @@ Prevents users in specific geographic areas from accessing CloudFront-distribute
   - Greatly reduces overhead.
   - EFA OS-bypass traffic limited to a single subnet.
   - Security groups must allow all inbound/outbound traffic to and from itself.
+ 
+### Improving Networking Using Placement Groups
+* Placement Group Options, used to control placement of groups of interdependent instances for your workload needs.
+  - Cluster
+    1. Instances are packed closely together inside a single AZ.
+    2. Very low latency.
+    3. Perfect for tightly coupled communication.
+    4. Commonly used for HPC workloads.
+  - Partition
+    1. Commonly used for large distributed or replicated workloads (HDFS, HBase, etc).
+    2. EC2 instances divided logical segments (partition).
+    3. Partitions are placed on their own rack (Not shared hardware).
+    4. Isolates impact of hardware failures for applications.
+  - Spread
+    1. Groups of instances placed on completely different hardware.
+    2. Recommended for apps with small number of instances that are considered critical.
+    3. Greatly reduces risk of multiple failures occurring at once.
+    4. Can span multiple AZs in the same region, but there is a limit of seven instances per AZ per group.
+
