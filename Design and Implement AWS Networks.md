@@ -291,3 +291,38 @@ V5 fields
 * Know what enhanced networking is and how we can enable it on certain instance types.
 * Know what cluster placement groups are.
 * Remember when and where we can take advantage of 9001 MTU.
+
+### Jumping into VPCs with Jump Server or Session Manager
+* What is a Jump Server/Bastion Host
+  - Servers running at the edge of a network.
+  - Meant to allow secured and controlled access into your private network.
+  - Bastion hosts are/should be locked down to a small set of allowed users.
+  - Bastions and their firewalls can be leveraged to perform port forwarding.
+  - Force authentication and security requirements. Logging of connections.
+* AWS Systems Manager Session Manager
+  - Capability offered within AWS Systems Manager
+  - Agent-based (SSM agent) management of all managed instances, edge devices and managed on-premises VM.
+  - No more SSH or RDP required! Port forwarding still supported.
+  - Centralised access control via IAM policies.
+  - Log and audit connections. Integrations with CloudTrail, S3, and CloudWatch.
+  - Logging is NOT possible for sessions connected via port forwarding or SSH.
+* Choosing between the two
+  - Session Manager will likely to be the best fit for MOST answers on the exam.
+  - Bastion hosts are best for specific use cases like OS firewall config changes.
+
+### Considerations for IPv6 in AWS VPCs
+* Discussing IPv4 and IPv6
+  - IPv4 32-bit addresses allowing for around 4.29 billion addresses.
+  - IPv6 128-bit addresses allow for many more addresses
+  - All AWS IPv6 addresses are publically routable.
+* Allocating IPv6 Address Space
+  - You can use your own IPv6 range by leveraging BYOIP and via IPAM.
+  - You can leverage an AWS-provided range (always a /56).
+  - All IPv6 addresses are considered publicaly routable! No NAT gateway use.
+* Key Concepts
+  - IPv4 and IPv6 routing is handled via DIFFERENT route specfiications within route tables.
+  - You must associate an IPv6 CIDR block with your VPC first (/56).
+  - You associate a /64 block to each subnet.
+  - Ensure your route tables and security groups are configured correctly.
+  - Egress-only internet gateways act like a NAT gateway for IPv6 only.
+  - Always ensure your applications and service support IPv6.
