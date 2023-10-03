@@ -326,3 +326,19 @@ V5 fields
   - Ensure your route tables and security groups are configured correctly.
   - Egress-only internet gateways act like a NAT gateway for IPv6 only.
   - Always ensure your applications and service support IPv6.
+
+### Managing Global Networks with AWS Cloud WAN
+* AWS Cloud WAN
+  - Service to help, build, manage, and monitor global networks.
+  - Centralised view for connecting on-premise datacenter and VPCs at a global level.
+  - Service designed to work with a core network
+* Key concepts
+  - Global network, single, private network serving as high-level container for network objects.
+  - Core network, part of it is managed by AWS, including regional connections (VPNs, VPC, TGWs).
+  - 
+* Deeper components
+  - Core network policy, declarative document applied to core network capturing intent. Defines all segments, regional routing and attachments.
+  - Attachments, any connection or resource added to your core network. VPCs, VPNs, and TGW attachments.
+  - Core network edge, regional connection point managed by AWS in each of your regions. AWS Transit Gateway behind the scenes.
+  - Network segments, dedicated routing domains.
+  - Segment actions, define how routing works between segments
