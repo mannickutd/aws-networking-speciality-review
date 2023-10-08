@@ -1,0 +1,25 @@
+*** Introduction
+
+*** Infrastructure as Code
+  - Define configurations of our networks and infrastructure in a single document or groups of docuemnts.
+  - Store these documents in source control.
+  - Deploy different versions of the document for each environment (dev, test, prod).
+  - Verify the proper configurations and operations in testing environments.
+  - Not only can we provision infrastructure but also deploy software on the newly created infrastructure.
+  - Agile development cycles.
+  - Standardization and reuse.
+  - Resource utilization.
+*** CloudFormation
+  - Process
+    1. Code templates in JSON or YAML.
+    2. Upload templates from local files or from S3.
+    3. Create a stack using API, CLI or console.
+    4. Stacks, infrastructure, and resources are created.
+  - Components
+    1. Templates, documents taht describe teh environment that you want to create and launch in AWS.
+    2. Stacks, a stack is deployed from a template adn represents the resources and infrastructure that are connected together and belong to an application.
+    3. Once a stck has been successfully launched, we can use change sets to perform updates on the deployed infrastructure.
+
+*** Using the Amazon CDK
+
+*** Dynamically Mapping Resources with AWS Cloud Map
