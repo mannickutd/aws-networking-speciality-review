@@ -290,7 +290,17 @@
   - Amazon Athena can be used to query data in S3 using SQL.
 
 ### Copying Network Traffic with VPC Traffic Mirroring
-*
+* Traffic Mirroring
+  - Traffic Mirroring, VPC feature that allows you to copy network traffic from an ENI and then sends that traffic to an out-of-band security or monitoring appliance.
+* Traffic Mirroring Use Cases
+  - Content Inspection
+  - Threat Monitoring
+  - Troubleshooting
+* Traffic Mirroring Concepts
+  - Source, which ENI you want to monitor.
+  - Filter, the set of rules that are defining what traffic is actually monitored.
+  - Target, the configured destination for your mirrored traffic (ENI, NLB or GWLB)
+  - Session, the establishment of relationships between sources, filters and targets.
+    1. NLB or GWLB Targets, you might get out-of-order mirrored packets.
 
-
-###
+### Managed IDS with Amazon GuardDuty
