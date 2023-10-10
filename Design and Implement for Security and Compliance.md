@@ -113,11 +113,133 @@
   - May provide features that comparable, AWS-managed services do not.
   - Services hosted on instances are the customer's responsibility to maintain.
 
-### Demo: Web Application Firewall
-
 ### Traffic Protection
-
-### Demo: AWS Certificate Manager
+* Secure data transmission requires:
+  - Verifying the identity of the receipient.
+  - Encrypting transmitted data.
+* Public Key Infrastructure (PKI)
+  - PKI is a collection of systems used to verify identities and secure electronic data transfer.
+  - Certificates are used by PKIs to verify identities and ownership of encryption keys.
+* Certificates
+  - Certificates contain information to validate the identity of both the holder of the certificate as well as the issuer of the certificate
+    1. Name of the certificate holder.
+    2. Other information about the holder.
+    3. Purpose of the certificate.
+    4. Expiration date.
+    5. Identity of the issuer.
+    6. Means of validating the authenticity of the certificate.
+  - Trust in the issuing certificate authority (CA) chain is required.
+  - Servers use certificates used by public CAs to prove their identity to requesting clients.
+  - If there are any problems in validating the certificates in the chain, the associated operation will be rejected.
+* SSL/TLS (Secure Sockets Layer/Transport Layer Security)
+  - SSL/TLS are protocols used to establish secure network communications.
+  - SSL depreciated in 2015.
+  - AWS recommends using version SSL 1.2 as a minimum.
+* ACM (AWS Certificate Manager)
+  - Certificates in AWS can be managed using either ACM or IAM.
+    1. ACM not available in all regions.
+    2. IAM cannot be used to create certificates.
+    3. ACM certificates cannot be imported by IAM.
+    4. IAM certificates cannot be managed from the console.
+  - Integrated with AWS Services.
+    1. ELB.
+    2. CloudFront.
+    3. API Gateway.
+    4. CloudFormation.
+    5. Elastic Beanstalk.
+  - Provision public certificates.
+    1. SSL/TLS for public services.
+    2. Import external X.509 certificates.
+    3. Provisiioned from AWS CA.
+    4. Free service.
+  - Requires validation of domain ownership.
+    1. FQDN of website (* wildcard accepted).
+    2. Validate via:
+       a. DNS (Add text record to zone).
+       b. Email (automatically sent to zone contacts).
+    3. Certificate format is X.509 v3.
+    4. Valid for 13 months.
+  - Certificates are provisioned on a per-region basis.
+  - Certificates used by CloudFront must be provisioned in us-east-1.
+  - ACM certificates can only by used by AWS services integrated with ACM.
+  - ACM certificates and their private keys may not be downloaded.
+* AWS Certificate Manager Private Certificate Authority (ACM PCA).
+  - Create your own private CA infrastructure.
+    1. SSL/TLS certificates to identify internal resources.
+    2. $400/month per CA.
+    3. Charge per private certificate.
+* What needs to be protected?
+  - Requests from external clients to AWS services.
+  - Traffic within AWS.
+* Protecting client requests - CloudFront
+  - Settings configured per cache behaviour.
+  - Viewer Protocol Policy
+    1. HTTP and HTTPS (default)
+    2. Redirect HTTP to HTTPS
+       a. Tells client to submit new request to HTTPS URL.
+       b. Requests below HTTP v1.1 will be rejected (status 403 Forbidden).
+  - SSL Certificate
+    1. Default CloudFront certificate.
+      a. Requests must use CF domain name.
+      b. Only supports TLSv1 or later.
+    2. Custom SSL certificate.
+       a. Requests use custom domain name.
+       b. Certificates must be in either ACM (us-east-1) or in IAM.
+  * Protecting client requests - S3
+    - Deny connections not using HTTPS via bucket policy condition.
+  * Protecting client requests - ELB
+    - Configure a listener for a secure protocol.
+      1. CLB - HTTPS or SSL.
+      2. ALB - HTTPS only
+      3. NLB - TLS only
+    - Select default certificate and security policy.
+      1. CLB may modify policy details in console.
+      2. ALB and NLB may add additional certificates after creation.
+      3. Default certificate is used when
+         a. Client doesn't connect with SNI support.
+         b. Requested hostname does not match any additional certificates.
+  * Protecting client requests - EC2 and Container Instances.
+    - Enabling HTTPS/TLS at ELB terminates secure session at ELB.
+    - Configure CLB/NLB listener for TCP.
+    - Route traffic to appropriate port on application instance.
+    - Services hosted on instances are customers responsibility to configure and maintain.
+    - Handling SSL/TLS connections at application server increases resource consumption.
+  * Protecting Intra - AWS Traffic
+    - AWS network traffic uses shared infrastructure.
+    - AWS service objects provisioned in AWS may be hosted on hardware in different locations.
+    - Organizational compliance requirements might require secured connections to customer managed services.
+  * Protecting Intra - AWS Traffic CloudFront
+    - Settings configured per origin.
+    - Origin Protocol Policy.
+      1. HTTP Only (default)
+      2. HTTPS Only.
+      3. Match Viewer.
+    - Origin-type specifics
+      1. Certificate at custom origin servers must be from Mozilla-trusted CA.
+      2. S3 bucket origins are always "Match Viewer", configure viewer protocol policy.
+      3. S3 buckets as websites do not support HTTPS.
+  * Protecting Intra - AWS Traffic EC2 and Container Instances.
+    - Secured network connections in-between instances require OS-level service configuration.
+    - EBS encryption encrypts data traffic between instance and EBS volumes.
+    - EFS traffic can be secured by TLS when volumes are mounted (per connection)
+    - FSx traffic is automatically encrypted when accessed using SMB 3 or Samba 4.2 (or newer)
+  * Protecting Intra - AWS Traffic RDS
+    - RDS creates an SSL/TLS certificate and installs the certificate on the provisioned DB instance.
+    - Methods of requiring SSL/TLS connections vary by DB engine and version.
+    - AWS root certificates for RDS will need to be applied to clients.
+  * What about Encryption at Rest?
+    - Data can be encrypted at different locations.
+      1. Client.
+      2. AWS service.
+      3. Customer service.
+    - AWS services for customer key management.
+      1. Key Management Service (KMS)
+         a. Integrated with many AWS services.
+         b. Allows granular access controls.
+         c. Shared infrastructure.
+      2. CloudHSM
+         a. AWS-managed HSM appliance.
+         b. Not integrated with AWS services. 
 
 ### Traffic Awareness
 
