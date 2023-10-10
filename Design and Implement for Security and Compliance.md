@@ -242,5 +242,55 @@
          b. Not integrated with AWS services. 
 
 ### Traffic Awareness
+* Awareness
+  - Traffic-related events.
+  - Performance-related events.
+  - AWS Event-related events.
+  - Security-related events.
+* Amazon CloudWatch and Amazon EventBridge
+  - Metrics: Performance numbers and counts.
+  - Logs, filterable information with possibility for greater detail.
+  - Events, leverage EventBridge to automate responses to criteria.
+  - The unified CloudWatch agent allows for custom metric collections.
+* Amazon CloudWatch and Web Application Firewall Metrics
+  - Set up separate metric namespaces for each rule and ACL.
+  - AllowedRequests, BlockedRequests, CountedRequests, PassedRequests.
+  - Metrics for ELB/API-associated ACLs are viewed in the object's Region.
+  - Metrics for CloudFront are viewed in us-east-1.
+* Amazon CloudWatch and Shield Advanced Metrics.
+  - There are a few general metrics you can and should monitor.
+    1. DDoSDetected
+    2. DDoSAttackBitsPerSecond
+    3. DDoSAttackPacketsPerSecond
+    4. DDoSAttackRequestsPerSecond
+  - DDoSAttack, per-second metrics can be viewed by AttackVector dimensions.
+  - CloudFront and Route53 metrics are viewed in us-east-1.
+* Amazon CloudWatch and VPC Traffic Mirroring Metrics
+  - These are reported by monitored EC2 isntances.
+    1. NetworkMirrorIn/Out
+    2. NetworkPacketsMirrorIn/Out
+    3. NetworkSkipMirrorIn/Out
+    4. NetworkPacketsSkipMirrorIn/Out
+  - NetworkPackets from above are available for basic monitoring only.
+* Instance-Level Services
+  - Packet Capture and Analysis
+  - Intrusion Detection/Prevention
+  - ENI can be a target for VPC traffic mirroring sessions.
+    1. Packet capture software must support VXLAN decapsulation.
+  - IDS monitors network and reports events.
+  - IPS can modify traffic or service configurations in response to events.
+  - Often sandwiched between ELB layers.
+  - Service appliances are avilable in the AWS marketplace.
+* Automation
+  - CloudWatch Alarms and Filters, use CloudWatch alarms and event filters to recognise circumstances of interest.
+  - Remediation and Notifications, use Lambda functions and SNS topics to trigger notification and response actions.
+* Visualize and Analyze
+  - Amazon Kinesis Data Streams can be used to stream real-time data.
+  - Amazon OpenSearch can be used to perform searches and analytics of real-time or static data.
+  - Amazon Athena can be used to query data in S3 using SQL.
+
+### Copying Network Traffic with VPC Traffic Mirroring
+*
+
 
 ###
