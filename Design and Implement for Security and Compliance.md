@@ -304,3 +304,84 @@
     1. NLB or GWLB Targets, you might get out-of-order mirrored packets.
 
 ### Managed IDS with Amazon GuardDuty
+* GuardDuty concepts
+  - AWS managed, continuous security monitoring and intrusion detection service.
+  - Leverages threat intelligence feeds and machine learning to identify and alert.
+  - Easily generate and report on threat insights around AWS accounts/organizations.
+  - Use GuardDuty in AWS Organizations to easily centralize findings and reporting.
+* Examples
+  - Escalated privileges.
+  - Exposed credentials.
+  - Malicious IP address interactions.
+  - Cryptocurrency mining and activities.
+
+### Inspecting Compute Networking with Amazon Inspector
+*  Overview
+  - Managed security service with automated vulnerability/access scanning.
+  - Delegated administrator allows you to centralize findings with ease.
+  - Two types of scans, Network Assessment, Host Assessment (SSM Agent)
+*  Network Assessments
+  - scans compute for network reachability (EC2 resources and Lambda)
+  - Performed on an automated schedule (every 24hrs)
+  - Agentless version of assessment.
+  - Reports on overly permissive/open networking configs (Security Groups, NACLs etc)
+
+### DDoS Protection Using AWS Shield
+* Overview
+  - Service offering protection against DDoS attacks targeting AWS resources.
+  - Protection for Layer 3, Layer 4, and Layer 7.
+  - Two options, standard (free) and advanced (paid)
+* AWS Shield Standard
+  - The free version is enabled automatically for all AWS customers
+  - Handles most of the common attacks.
+  - Limitations in resources, including Route 53, CloudFront, and standard AWS Global Accelerator endpoints.
+* AWS Shield Advanced
+  - Hefty price tag, $3k per month, with one year commitment.
+  - Greater protection offerings. DDoS, volumetric bot attacks, exploits.
+  - More supported resources, including EC@ EIPs, ELBs and EC2 instances.
+  - Centrally manage via AWS organizations and AWS Firewall Manager.
+  - Comes with a dedicated support team and financial insurance.
+
+### VPC Perimeter Protection via AWS Network Firewall
+* AWS Network Firewall
+  - Stateful network firewall service, used for IDS and IPS within VPCs.
+  - Filters traffic at perimeters of your VPCs. Catches traffic going to and from IGW, NAT Gateways, VPNs and even Direct Connections.
+  - Used for domain name filtering, blocking bad domains, and packet inspection.
+  - Allows for smart protocol detection. Eg. Look for HTTPS not just at port 443.
+  - Always deploy firewall endpoints into their OWN subnets. It cannot inspect traffic within itw own subnet.
+* AWS Network Firewall Components
+  - Firewall, connects to the actual VPC that you want to protect. Protects inbound and outbound traffic flows.
+  - Firewall policy, defines the behaviours of the firewalls. Only one firewall policy per firewall, but multiple firewalls per policy is allowed
+  - Rule Group, collection of both stateful and stateless rules for inspecting and handling traffic flows.
+* Rule Groups - Stateless
+  - Defines standard network connection attributes for examining a packet on its own, with no additional context.
+  - This means no knowledge of traffic direction, existing connections etc.
+  - 5-tuple criteria
+    1. Protocol.
+    2. Source IP.
+    3. Source port.
+    4. Destination IP.
+    5. Destination port.
+  - Rules get processed in the prioritized order. Low to High and first match wins!
+  - Three Actions:
+    1. Pass.
+    2. Drop.
+    3. Forward.
+  - Comparable to NACLs but more advanced
+* Stateless Rule Actions
+  - Pass, discontinue all inspection of the packet, and permit it to go to its intended destination.
+  - Drop, discontinue all inspection of the packet, and block it from going to its intended destination.
+  - Foward to stateful rules, discontinue stateless inspection of the packet, and forward it to the stateful rule engine for inspection.
+* Rule Groups - Stateful
+  - Inspects the incoming packets WITH context of flow and traffic information.
+  - Compatible with suricata rules. Can be imported as well.
+  - Support for, standard rules, suricata rules, and domain list rules.
+  - Rules processed in order of the action settings. Stops on first match Pass > Drop > Alert.
+  - Default behaviour is to allow all traffic to pass.
+  - These are similar to security groups.
+* Stateful Rules
+  - Domain List Rule, allow and deny based on domain names, including protocols. Uses SNI for HTTPS hostnames.
+  - Suricata Rule, this rule type contains actions, header and optional settings.
+  - Standard Rule, translated into suricata rules.
+
+### AWS CloudHSM Overview
