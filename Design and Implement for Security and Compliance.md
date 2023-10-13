@@ -385,3 +385,94 @@
   - Standard Rule, translated into suricata rules.
 
 ### AWS CloudHSM Overview
+* Overview
+  - Highly available HSM clusters within AWS. Single-tenant solution for cryptographic keys.
+  - AWS hosts the clusters themselves.
+  - ENIs are deployed to your chosen VPC subnets.
+  - FIPS 140-2 Level 3 compliant hardware.
+  - Access exclusively via industry-standardized API calls and libraries.
+* Networking aspects and uses
+  - Automatically load balanced when using more than one node.
+  - Offload cryptographic computation burden of TLS from web infrastructure.
+  - Enable Oracle TDE and store master encryption key in HSM clusters.
+  - Store your own Certificate Authority (CA) private key.
+  - AWS-owned AWS account hosts the actual clusters. ENIs are deployed into your chosen VPC and subnets for interaction.
+
+  ### Central Firewall Management with AWS Firewall Manager
+  * AWS Firewall Manager, service that simplifies administration and maintenance tasks across multiple accounts and resources for a variety of protections.
+  * Simplifying the administration of tools such as
+    - AWS WAF.
+    - AWS shield advanced.
+    - Amazon VPC security groups.
+    - AWS Network Firewall.
+    - Amazon Route 53 Resolver DNS Firewall.
+    - Palo Alto Network Cloud NFGW
+    - Fortigate Cloud Native Firewall (CNF) as a service.
+  * Concepts
+    - Resource Set, collection of resources, such as firewalls that you can group together and manage in a Firewall Manager policy.
+    - Firewall Manager Policy Common Settings, several common settings across many different resources. These include a name, the scope of the policy, and resource tagging to control policy scope.
+    - Findings, creates findings for resources that are out of compliance and for attacks that it detects and sends them to AWS Security Hub.
+   
+### Governance and Compliance
+* Overview
+  - Traffic control, let in desired traffic and restrict the rest.
+  - Traffic protection, secure appropriate traffic sessions.
+  - Traffic awareness, create automated monitoring and response procedures.
+* How can we verify the our environment is configured according to plan? How can we ensure that our environment won't be inappropriately modified.
+  - Governane, establishing systems to ensure that organizations are following the "rules".
+  - Compliance, demonstrating that organizations are in fact, following the "rules".
+  - Organizations establish procedures to
+    1. Ensure objectives are efficiently met.
+    2. Ensure risks are identified and mitigated.
+* AWS IAM
+  - Access control to AWS services.
+  - All AWS API calls must be authenticated and authorized.
+* AWS Organizations
+  - Allows centralized management of multiple AWS accounts.
+  - Apply Service Control Policies (SCPs) onto child accounts to define the maximum applicable IAM permissions.
+    1. Child account principals may only perform actions allowed by both AWS account IAM policies and Organizational SCPs.
+* AWS CloudTrail
+  - AWS API-call auditing service.
+  - Audit trails from multiple accounts can be sent to a single S3 bucket.
+  - Integrated with CloudWatch Events.
+  - Does NOT monitor network traffic.
+* AWS Config
+  - Monitors the configuration of your AWS resources.
+  - Tracks configuration changes.
+  - Applies remediation rules.
+  - Integrates with CloudTrail.
+* Goverance
+  - Follow IAM best practices
+    1. Secure the root user.
+    2. Use multi-factor authentication.
+    3. Authorize roles instead of users.
+    4. Grant least privilege.
+  - Enforce organizational policies with AWS Organization SCPs.
+  - Automate responses to audited API calls using CloudWatch Events.
+  - Automate configuration change remediation with Config rules.
+  - Investigate the cause of events to determine follow-up actions.
+  - Require that common resources be created using CloudFormation templates.
+    1. CF authorized to manage resources via IAM role.
+    2. Users only given permission to use CF templates.
+* AWS Service Catalog
+  - Controls and standardizes deployment of AWS services.
+  - Catalog administrators define products using CloudFormation templates.
+  - End users may deploy products that they have been granted access to.
+* AWS Firewall Manager
+  - Provides AWS Organizations an interface to centrally enforce deployment of
+    1. WAF ACLs
+    2. AWS Shield Advanced protection policies.
+    3. VPC security groups.
+  - Reports findings to AWS Security Hub (if enabled)
+* AWS Security Hub
+  - Centralized security and compliance monitoring service.
+  - Gathers data from AWS and supported third-party products.
+  - Consolidates information across multiple accounts.
+  - Runs account configuration and compliance checks.
+  - Imports findings from Amazon GuardDuty and Amazon Inspector.
+  - Receives findings from AWS Firewall Manager.
+    1. WAF policy non-compliance
+    2. AWS Shield Advanced not protecting resources.
+    3. AWS Shield Advanced identifies an attack.
+    4. VPC Security Group configuration issues.
+  - Integrates with CloudWatch Events.
