@@ -112,4 +112,47 @@
     - Only one "default" route per route table.
     - Blackhole routes drop traffic matching the CIDR.
     - Required to forward traffic to a peered TGW.
-  
+
+### Transit Gateway Routing
+* Propagations
+  - Identify which TGW attachments automatically add prefixes to that route table.
+  - An attachment may propagate to many route tables.
+* Associations
+  - Identify which TGW attachments use that route table to determine the destination attachment for outbound traffic.
+  - An attachment may only be associated with a single route table.
+* Route tables
+  - Networks that require restricted communication should be associated with a custom route table.
+  - Networks allowed to reach any location can be associated with the initial TGW route table.
+* Routing conflicts
+  - Route with longest prefix.
+  - Static > propagated.
+  - VPC > DX > VPN.
+
+### Network Size Limits
+* VPC peering
+  - Only connects two specific VPCs.
+  - A VPC may support up to 50 VPC Peering connections.
+  - Routes must be manually added to VPC route tables to support traffic flow.
+* VPC endpoint services
+  - NLBs can handle around 55000 simultaneous connections.
+* AWS Site-to-Site VPN
+  - Default per-region limits
+    1. 5 VGWs.
+    2. 10 VPN connections per VGW.
+    3. 500 Site-to-Site VPN connections and customer gateways.
+* Transit VPCs
+  - 3rd-party VPN platform
+  - VPC Route table limits
+    1. 50 non-propagated
+    2. 100 propagated
+  - 100 dynamic routes VGWs
+* Direct Connect Gateway
+  - Up to 30 private VIFs. Up to 10 VGWs.
+  - Or
+  - Up to 30 Transit VIFs. Up to 3 TGWs.
+* Transit Gateway
+  - Up to 5000 attachments.
+    1. 20 DX Gateway attachments.
+  - Up to 50 peering attachments.
+  - 20 Route tables per TGW.
+  - 10000 static routes per TGW.
