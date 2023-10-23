@@ -145,13 +145,110 @@
   - VLAN traffic may only be sent to the gateway your single VIF is attached to.
 
 ### Virtual Interfaces & BGP
-* 
+* VIF BGP Requirements
+  - All VIFs must be connected to an on-prem BGP peer.
+  - Both IPv4 and IPv6 are supported.
+  - BGP MD5 authentication is required.
+  - Some DX locations support two peers for one VIF.
+* BGP Prefix Advertisements
+  - Private VIF 100 is the max number of prefixes.
+  - Public VIF 1000 is the max number of prefixes
+  - Exceeding this limit will cause the BGP sessions to go to the IDLE state.
+  - VGWs associated with private VIFs advertise all known routes.
+  - VGWs associated with DX gateways must specify allowed prefixes to be advertised.
+  - For public VIFs, AWS advertises prefixes for
+    1. All public services in all public AWS regions.
+    2. Non-region services such as CloudFront and Route53.
+  - Control outbound traffic to these prefixes at your on-prem router:
+    1. Filter outbound traffic with ACLs or firewalls.
+    2. Filter learned prefixes using BGP communities.
+* BGP Communities
+  - A means of labelling BGP prefixes.
+  - BGP routers can be configured to handle incoming or outgoing prefixes based on their community values.
+  - Comprised of 16-bit ASN and a 16-bit, organization-defined number.
+* AWS Prefix BGP Communities
+  - AWS automatically applies the following communities to prefixes advertised to public VIFs:
+    1. 7224:8100 - routes to services from the same region as the DX connection.
+    2. 7224:8200 - routes to services from the same continent as the DX connection.
+    3. No value - routes to global services
+  - AWS advertised prefixes also include the "no_export" BGP community.
+* Local customer prefixes and BGP Communities.
+  - Customer prefix advertisement is controlled at public VIF.
+  - Use BGP communities to control where AWS can propagate customer prefixes:
+    1. Local AWS region - 7224:9100
+    2. All regions in a continent - 7224:9200
+    3. All public regions - 7224:9300
 
 ### Link Aggregation Groups (LAGs)
+* What is?
+  - A collection of multiple physical links combined into a single, logical link.
+  - Traffic sent to the LAG is distributed across all member links.
+  - Aggregates throughput of member links.
+  - Provides resiliency in the event of member link failure.
+* LAG requirements in Direct Connect
+  - All DX connections in a LAG must:
+    1. Use the same bandwidth.
+    2. Terminate at the same DX location.
+  - Maximum of four connections per LAG.
+  - Maximum of 10 LAGs per region.
+* Lag Creation
+  - Use existing connections, request new connections, or a mix of both.
+  - You cannot create a LAG with new connections if you would exceed the overall connection limit for the region.
+  - Adding existing connections to a LAG will temporarily interrupt connectivity.
+  - Minimum links identifies the minimum number of functional connections necessary for the entire link to be functional
+    1. If the nubmer of active links drops below the minimum, the entire LAG connection will become non-operational.
+    2. Default value is 0 (no minimum).
+* LAGs and VIFs
+  - VIFs may be attached to a LAG instead of a single DX connection.
+  - A corresponding customer LAG must be created at the on-prem hardware.
+  - Add LAG primary port to VIF VLAN.
 
 ### Direct Connect Gateways
+* What are Direct Connect Gateways?
+  - Global services that facilitate DX connectivity to multiple AWS regions.
+  - A bridge between Private or Transit VIFs and AWS networking objects.
+  - No interactions with Public VIFs.
+  - Are free of charge.
+* Direct Connect Gateway and Private VIFs
+  - By itself a private VIF can only connect to a single VGW.
+  - Connected VGWs must be in the same region used by the DX connection.
+  - DX gateway may connect a single private VIF with up to 10 VGWs in any public region.
+  - Up to 30 private VIFs may connect to the same DX gateway.
+* DX Gateway IP Traffic limitations
+  - VPCs connecting through a DX gateway cannot have overlapping IP ranges.
+  - Only sessions via a single VIF to one connected VPC at a time are allowed.
+  - You cannot send traffic:
+    1. From one associated VPC to another.
+    2. From one connected VIF to another.
+    3. From a connected VIF through a VPN connection using an associated VPG.
+* Direct Connect Gateways and Transit VIFs
+  - DX gateways are also used when attaching DX connections to Transit gateways.
+  - A DXGW may connect with either:
+    1. Private VIFs and VGWs.
+    2. Transit VIFs adn TGWs.
+* Other DX Gateway odd-bits
+  - VGWs in one AWS account may request associated with a DX gateway in a different account.
+  - DX gateways may only be associated with VGWs attached to a VPC.
+  - Each VIF and VGW may only be associated with a single DX gateway.
+  - A VGW can be simultaneously attached to both a single private VIF and a single DX gateway (connected to a different private VIF).
+* Configure DX Gateway
+  - Name.
+  - Amazon side ASN.
+  - Attach to VIF.
+  - Associate with VGW or TGW.
 
 ### Direct Connection Security MACsec
+* What is?
+  - IEEE Layer 2 standard providing data confidentiality, integrity, and origin authenticity.
+  - Important, Direct Connect is NOT an encrypted traffic channel.
+  - Must configure Direct Connect connections for MACsec (limited partners).
+  - Adds 8-byte header and 16-byte tail to all ethernet frames.
+  - May still need IPSec VPNs in addition to MACsec.
+* Key concepts and components
+  - Create a CKN/CAK* pair for use as MACsec secret key.
+  - MACsec key agreement decides how the connection leverages a pre-shared key.
+  - Associate the CKN/CAK pair with both the DX interface or LAG as well as the customer router.
+  - Configuration options include 'should_encrypt', 'must_encrypt' and 'no_encrypt'.
 
 ### Well-Architected Direct Connect
 
