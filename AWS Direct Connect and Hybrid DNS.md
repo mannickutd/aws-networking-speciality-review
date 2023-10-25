@@ -339,11 +339,70 @@
   - Connection, VIF, and BGP session are up but you can't reach AWS resources.
     1. Routing to AWS resources correctly configured?
     2. NACLs and security groups correctly configured?
-    3. Software at AWS resources correctly configured?
-  
-       
+    3. Software at AWS resources correctly configured?   
 
 ### Hybrid DNS
+* What is Hybrid DNS?
+  - Private DNS resolution across hybrid networks.
+    1. AWS resources are able to use on-prem DNS zones.
+    2. On-prem resources are able to use Route 53 private zones or VPC DNS.
+* Route 53 Resolver
+  - Provides default DNS resolution within VPCs.
+  - "VPC +2" IP address.
+  - Part of EC2 service hardware.
+  - Route 53 Private Zones must be associated to VPCs.
+  - Resolver search sequence:
+    1. Route 53 Private Zones.
+    2. VPC DNS domain.
+    3. Public DNS system.
+* They Hybrid DNS Challenge
+  - EC2 instances always use Route 53 Resolver by default.
+  - On-prem systems cannot reach Route 53 Resolver.
+* Customer implemented DNS Resolvers
+  - EC2-hosted DNS resolvers are provisioned within VPC.
+  - VPC configured to use EC2 resolver instead of Route 53.
+  - Resolver forwards matching requests to on-prem DNS.
+  - On-prem DNS resolvers configured to forward matching request to EC2 resolver.
+* AWS Directory Servers as DNS Resolvers
+  - AWS Directory Services Simple AD can provide the same functionality.
+  - Configure on-prem DNS to forward to Simple AD DNS addresses.
+* Customer-implemented DNS Resolvers - Problems
+  - Single EC2-ENI limited to 1024 queries/second.
+  - Multi-AZ deployment needed for HA.
+  - Most DNS clients don't load-balance across multiple servers.
+  - DNS resolver services can often load balance.
+* Route 53 Resolver Endpoints
+  - Provides IP accessible endpoints to the AWS Route 53 Resolver service.
+  - Endpoints support from 2 to 8 ENIs.
+  - Each ENI supports up to 10000 queries/second.
+  - Endpoints are created within a single VPC, but maybe used by other VPCs in the same region.
+  - Secured by a single VPC security group.
+    1. Group assignment cannot be changed after creation.
+  - Each endpoint can handle either inbound or outbound DNS requests.
+  - Endpoint ENIs are AZ-scoped resources.
+    1. Place your endpoints in separate AZs for availability.
+  - ENIs use either dynamic or customer-assigned IP addresses.
+  - IP addresses are persistent for the lifetime of the endpoint.
+  - Pricing per ENI, per hour.
+* Inbound Endpoints
+  - Handles requet forwarding from on-prem to AWS DNS resolver.
+  - Requests are sent to the IP address of an ENI.
+  - Request from on-prem DNS resolver instead of client for better performance.
+  - Private hosted zones must be associated to the VPC where resolver endpoints reside.
+* Outbound Endpoints
+  - Handle forwarding for requests originating within AWS.
+  - Can be associated with multiple VPCs in a region.
+* Outbound Endpoint Traffic Rules
+  - Specify forwarding action for requests matching defined FQDN patterns.
+  - Forward rules forward requests to IPv4 address of on-prem DNS.
+  - System rules forward requests to Route 53 resolver.
+  - System rules are automatically created for:
+    1. Private hosted zones.
+    2. VPC domain names.
+    3. Publicly reserved domain names.
+  - If rules conflict, resolver prefers:
+    1. Most specific FQDN
+    2. Forward rules over system rules.
 
 ### DNS Using Route 53 Resolver Endpoints (Inbound and Outbound)
 
