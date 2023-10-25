@@ -251,6 +251,97 @@
   - Configuration options include 'should_encrypt', 'must_encrypt' and 'no_encrypt'.
 
 ### Well-Architected Direct Connect
+* Resiliency - Multiple Connections
+  - Implement multiple DX connections to increase resiliency.
+    1. Multiple connections at single DX location.
+    2. Multiple DX locations.
+  - Implement LAGs.
+  - Direct Connect Resiliency Toolkit.
+* Resiliency - Bidirectional Forwarding Detection
+  - Routing protocols do not quickly recognize link failures.
+    1. BGP default peer timeout is 270 seconds.
+  - Bidirectional forwarding detection can detect link failures and respond within milliseconds.
+    1. Informs associated routing protocol to recalculate best paths.
+  - Automatically enabled on VIFs.
+  - Must be configured at customer devices.
+    1. Tx/Rx intervals in milliseconds.
+    2. Interval multiplier.
+* Resiliency - Failover to VPN
+  - BGP prefix preference configuration can be used to initiate VPN connections if DX paths are down.
+  - AWS VPN creation can be automated.
+  - Create VPN server AMIs.
+* Resiliency and Performance - Local BGP communities
+  - Control prefix-preference for AWS traffic returning to your network.
+  - Used with multiple DX connections to configure load balancing or failover.
+  - Supported over Private and Transit VIFs.
+  - Community values:
+    1. Low preference - 7224:7100
+    2. Medium preference - 7224:7200
+    3. High preference - 7224:7300
+  - Traffic will be sent to higher preference prefixes over lower prefixes.
+  - Traffic is load balanced across multiple, equal-preference prefixes.
+* Performance - LAGs
+  - LAGs can be implemented to aggregate throughput from multiple connections.
+  - 4x10 Gbps physical connections = 1x40 Gbps logical connection.
+* Performance - Jumbo Frames
+  - Enabling jumbo frames for private VIFs sets MTU from 1500 to 9001 bytes.
+    1. More data sent per Ethernet packet.
+    2. Total data transmitted with fewer packets.
+  - Enabling/disabling jumbo frames on a VIF disrupts traffic for all VIFs on the connection for up to 30 seconds.
+  - Ensure that support for jumbo frames is enabled from end to end.
+  - Using nested VLANs might cause occasional data corruption if jumbo frames are not enabled.
+  - Not supported via VPG static routes.
+* Security - VPN over DX
+  - AWS does not encrypt DX traffic.
+  - VPN tunnels may be established from on-prem to EC2-based VPN systems.
+    1. AWS Site-to-Site VPN via Public VIF.
+    2. Private VIF - EC2 hosted VPN.
+* Cost Optimization - DX DTO vs Internet DTO
+  - Direct Connect has two billing elements
+    1. Port Hours
+    2. Data Transfer Out (DTO)
+  - DTO rates vary depending on the source AWS region and the DX location the traffic is sent to.
+  - DX DTO rate is not reduced by increased usage.
+  - Data transferred in is always free.
+* Cost Optimization - DX DTO vs Internet DTO Scenario
+  - For "x" amount of DTO, when does DX become cheaper than internet DTO?
+    1. Scenario conditions:
+       a. Internet DTO rate 0.05/GB
+       b. DX DTO rate: 0.02/GB
+       c. 1G Port 0.30/hour
+       d. 10G Port 2.25/hour
+    2. (.05x) - ((.02x) + (port rate * time)) NOTE: Negative amounts mean that DX is more expensive.
+* Operational Excellence - Monitoring
+  - CloudWatch metrics for DX connections:
+    1. ConnectionState.
+    2. ConnectionCRCErrorCount.
+    3. ConnectionBpsEgress/Ingress.
+    4. ConnectionLightLevelTx/Rx.
+    5. ConnectionPpsEgress/Ingress.
+  - VIFs do not have CW metrics.
+    1. VIF status must be checked manually.
+* Operational Excellence - Troubleshooting
+  - No connectivity to AWS device specified in LOA-CFA?
+    1. Physical layer problem at on-prem or DX location.
+    2. Check cable and port configuration.
+    3. Ensure DX hardware requirements are followed.
+  - DX connection is up but VIFs stay down.
+    1. Data link layer problem.
+    2. Verify 802.1Q support.
+    3. Ensure correct VLAN and VIF configuration.
+  - Connection up but can't establish BGP session?
+    1. Misconfigured:
+       a. ASNs.
+       b. Peer IP address.
+       c. MD5 authentication key.
+       d. Exceeded max number of advertised prefixes.
+       e. BGP port (TCP 179) is blocked.
+  - Connection, VIF, and BGP session are up but you can't reach AWS resources.
+    1. Routing to AWS resources correctly configured?
+    2. NACLs and security groups correctly configured?
+    3. Software at AWS resources correctly configured?
+  
+       
 
 ### Hybrid DNS
 
