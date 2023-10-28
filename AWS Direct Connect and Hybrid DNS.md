@@ -405,5 +405,27 @@
     2. Forward rules over system rules.
 
 ### DNS Using Route 53 Resolver Endpoints (Inbound and Outbound)
-
-
+* Inbound Resolver Endpoints
+  - Traffic inbound to VPCs
+    1. DNS resolvers send traffic to these endpoints to leverage to Route 53 Resolver in VPCs.
+  - Resolve AWS Domain Names
+    1. Enables on-premises DNS resolvers to resolve AWS resources and records that live within VPCs and private hosted zones.
+* Outbound Resolver Endpoints
+  - Traffic outbound from VPCs
+    1. Conditionally forwards DNS queries to DNS resolvers on-premises.
+  - Leverages Resolver Rules
+    1. Resolver rules determine which DNS query traffic to forward to your DNS resolvers outside of AWS.
+* Resolver Endpoint Concepts to Know
+  - You associate BOTH endpoint types with one or more VPCs within a single AWS Region.
+  - For an HA implementation, you create each endpoint type in two different AZs.
+  - High-throughput! Resolver endpoints support up to 10000 queries per second per IP address.
+* Lets Talk Resolver Rules
+  - Dictate which DNS queries get forwarded to no-premises DNS resolvers.
+  - Condition forwarding rules: Forwards DNS queries for a specific domain name to DNS resolver on your internal network. Also known as forwarding rules.
+  - System rules: Allow for selective overrides for behaviours defined in your forwarding rules.
+  - Recursive rules: Internet resolver rule. Automatically created for resolving any domain names not specified in your custom rules.
+  - Auto-defined rules: Rules that are automatically created for selected domains. Usually AWS-specific domains and private hosted zones.
+* Import Resolver Rule Exam Concepts
+  - If there are multiple rules that match a DNS query, the MOST specific one is chosen.
+  - You can leverage AWS RAM to centrally manage and share Resolver rules across an organization.
+  - Sharing allows cross-account DNS resolver rules usage from multiple VPCs. Centralized egress and ingress.
