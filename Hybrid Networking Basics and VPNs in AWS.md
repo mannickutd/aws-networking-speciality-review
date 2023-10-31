@@ -56,15 +56,53 @@
 * Selects the "best" of multiple paths to the same destination.
 * TCP 179
 
-### BGP Prefix Preference - Part 1
-* 
-
-### BGP Prefix Preference - Part 2
-
-### BGP Prefix Preference - Part 3
-
 ### VPN and IPSec Overview
 
 ### Customer Gateways
 
 ### AWS Site-to-Site VPN Configuration
+
+### AWS VGW and VPN Limitations
+
+## VPN Anywhere with AWS Client VPN
+* Client VPN Concepts
+  - Managed client-based VPN allowing secure access to AWS resources and on-premises networks.
+  - AWS-managed version of the well-known OpenVPN.
+  - The endpoint gets added to only one VPC. Use DNS to reference them!
+  - Remember client IP CIDR cannot overlap with your target network!
+  - Associate target networks for the endpoint. These are single VPC subnets.
+  - Optional features, client connect handler and cloudwatch logging.
+* Client Authentication
+  - Active Directory
+  - Mutual Authentication
+  - Single Sign-On (SAML 2.0)
+* Client VPN Pricing
+  - Each endpoint assocication and each VPN connection.
+  - Data transfer out for Amazon EC2 to internet.
+  - CloudWatch logging (if enabled).
+  - Client connect handler (if enabled).
+
+### Hub-and-Spoke VPN with AWS VPN CloudHub
+* AWS VPN CloudHub Concepts
+  - AWS service allowing secure VPN communication from one site to another.
+  - Hub-and-spoke VPN model for connecting IPSec VPNs.
+  - You can use this with OR without VPC.
+  - Perfect for multiple branch datacenters that need to communicate.
+  - Sometimes used as a backup connection between remote offices.
+
+### Third-Party VPN Solutions
+* Why would we want to use an EC2 Based VPN?
+  - Requirement for VPN protocol different from IPSec (General Routing Encapsulation or Dynamic MultiPoint VPN).
+  - Anytime you need overlapping IP CIDRs.
+  - Need to enable transitive routing on the AWS side of things.
+  - Desire to enable special capabilities.
+  - Bandwidth considerations.
+  - Most common solution is via an AWS Marketplace offering.
+* Things to know
+  - Ensure you disable source/destination check on the VPN EC2 instance.
+  - Since it is not managed, implementing recovery/failover is all on you.
+  - Understand networking limits for your chosen instances.
+  - Since this is not managed, you own ALL aspects of the solution.
+  - Vertical scaling for increasing total performance of the EC2 instance.
+  - Horizontal scaling for increasing limited bandwidth is possible as well.
+    
