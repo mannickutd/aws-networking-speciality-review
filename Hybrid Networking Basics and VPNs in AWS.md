@@ -105,4 +105,59 @@
   - Since this is not managed, you own ALL aspects of the solution.
   - Vertical scaling for increasing total performance of the EC2 instance.
   - Horizontal scaling for increasing limited bandwidth is possible as well.
-    
+ 
+### AWS VPN Monitoring and Optimization
+* CloudWatch Metrics
+  - TunnelState - 0 (Down) or 1 (Up/established)
+  - TunnelDataIn - In bytes
+  - TunnelDataOut - In bytes
+* CloudWatch Metrics EC2 Standard Metrics
+  - NetworkIn
+  - NetworkOut
+  - NetworkPacketsIn
+  - NetworkPacketsOut
+* CloudWatch Metrics Client VPN
+  - Egress bytes
+  - Ingress bytes
+  - Egress packets
+  - Ingress packets
+  - Authentication failures (count)
+  - Active connections (count)
+* CloudWatch Logs
+  - VPC Flow logs
+  - EC2-published log streams
+  - AWS Client VPN authentication attempts
+  - CloudTrail does not log network traffic 
+* Performance improvement EC2-VPN
+  - EC2 network performance tied to instance type and size.
+  - Some EC2 instance types support enhanced networking
+  - VPN software processing may limit maximum throughput.
+  - Some VPN systems can separate encryption and tunnel functions.
+* Where to look if its not working
+  - Route tables
+  - Security groups
+  - NACLs
+  - Authentication
+  - Customer Gateway Devices
+  - OpenVPN client configuration
+  - Insufficient permissions
+    1. Accessing AWS services or objects requires IAM or resource level permissions.
+    2. Accessing services hosted on EC2 require OS-level permissions.
+  - AWS networking services do not require IAM permissions in order to be used, only to be managed.
+
+### AWS VPN Cost Optimization
+* AWS Client VPN
+  - Managed client-based VPN allowing secure access between AWS resources and on-premises networks.
+* AWS Site-to-Site VPN
+  - An IPSec VPN connection between your remote network and your VPCs.
+* Scenario Overview
+  - 15 employees, who need access to VPC resources.
+  - CISO has required that a VPN connection be put into place for access.
+  - Employees can optionally connect from home or from the office.
+  - Each employee will use the VPN connection every work day (5 days) of the week.
+  - Estimate planning expects each employee to download and upload around 8 GB of data per day (each).
+  - Team access is the focus. Individual connection issues are not a primary concern.
+* Site-to-Site VPN could offer the best performance and security but you have extternal costs, like Customer Gateway Device.
+* AWS Client VPN offers a managed, scalable solution with no infrastructure overhead.
+* EC2-hosted VPNs allow for the most control, but remember, they have potential overhead costs in addition to infrastructure costs!
+* Remember to include data transfer charges, in addition to overhead costs, when deciding.
