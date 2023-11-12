@@ -56,6 +56,8 @@
 * Selects the "best" of multiple paths to the same destination.
 * TCP 179
 
+* When determining a preferred prefix, a BGP router will select the prefix preferred attribute or property value, in the following order: 1) Highest Weight; 2) Highest Local Preference; 3) Shortest AS Path; 4) Lowest Metric. Remember that weight is not a standard BGP attribute, but it is a proprietary property defined by Cisco Systems and used by many other vendors. Since the weights in this question are equal, the prefix with the "highest local preference" would be preferred.
+
 ### VPN and IPSec Overview
 
 ### Customer Gateways
